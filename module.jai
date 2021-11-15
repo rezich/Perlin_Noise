@@ -1,30 +1,30 @@
-get_2d :: (x: float, y: float, freq: float, depth: int, $SEED: int=1991) -> float {
+get_2d :: (x: float, y: float, freq: float, depth: int, SEED: int=1991) -> float {
     xa := x*freq;
     ya := y*freq;
     amp := 1.0;
     fin := 0.0;
     div := 0.0;
     for 0..depth-1 {
-        div += 256*amp;
-        fin += noise2d(xa, ya)*amp;
+        div += 256 * amp;
+        fin += noise2d(xa, ya, SEED) * amp;
         amp /= 2;
         xa *= 2;
         ya *= 2;
     }
     return fin/div;
 
-    noise2d :: (x: float, y: float) -> float {
+    noise2d :: (x: float, y: float, SEED: int) -> float {
         x_int := cast(int) floor(x);
         y_int := cast(int) floor(y);
         x_frac := x - cast(float) x_int;
         y_frac := y - cast(float) y_int;
-        s := cast(float) noise2(x_int, y_int);
-        t := cast(float) noise2(x_int+1, y_int);
-        u := cast(float) noise2(x_int, y_int+1);
-        v := cast(float) noise2(x_int+1, y_int+1);
+        s := cast(float) noise2(x_int, y_int, SEED);
+        t := cast(float) noise2(x_int+1, y_int, SEED);
+        u := cast(float) noise2(x_int, y_int+1, SEED);
+        v := cast(float) noise2(x_int+1, y_int+1, SEED);
         return smooth_inter(smooth_inter(s, t, x_frac), smooth_inter(u, v, x_frac), y_frac);
 
-        noise2 :: (x: int, y: int) -> int {
+        noise2 :: (x: int, y: int, SEED: int) -> int {
             y_index := (y + SEED) % 256;
             if y_index < 0 then y_index += 256;
             x_index := (x + HASH[y_index]) % 256;
